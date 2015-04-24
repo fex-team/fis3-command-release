@@ -16,16 +16,16 @@ exports.run = function(argv, cli) {
       '-L, --live': 'automatically reload your browser',
       '-c, --clean': 'clean compile cache',
       '-u, --unique': 'use unique compile caching',
-
     });
   }
 
   var options = {
-    dest: argv.dest || argv.d,
+    dest: argv.dest || argv.d || 'preview',
     watch: !!(argv.watch || argv.w),
     live: !!(argv.live || argv.L),
     clean: !!(argv.clean || argv.c),
     unique: !!(argv.unique || argv.u),
+    verbose: !!argv.verbose
   };
 
   function watch(opt) {
