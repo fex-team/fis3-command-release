@@ -15,7 +15,7 @@ exports.run = function(argv, cli) {
       '-w, --watch': 'monitor the changes of project',
       '-L, --live': 'automatically reload your browser',
       '-c, --clean': 'clean compile cache',
-      '-u, --unique': 'enable verbose output',
+      '-u, --unique': 'use unique compile caching',
 
     });
   }
