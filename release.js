@@ -229,19 +229,6 @@ exports.run = function(argv, cli) {
     //delete options.live;
   }
 
-  switch (typeof options.md5) {
-    case 'undefined':
-      options.md5 = 0;
-      break;
-    case 'boolean':
-      options.md5 = options.md5 ? 1 : 0;
-      break;
-    default:
-      options.md5 = isNaN(options.md5) ? 0 : parseInt(options.md5);
-  }
-  //md5 > 0, force release hash file
-  options.hash = options.md5 > 0;
-
   if (options.watch) {
     watch(options);
   } else {
