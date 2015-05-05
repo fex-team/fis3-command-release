@@ -5,7 +5,7 @@
 
 'use strict';
 
-exports.name = 'release';
+exports.name = 'release [media name]';
 exports.desc = 'build and deploy your project';
 exports.run = function(argv, cli) {
 
@@ -15,8 +15,13 @@ exports.run = function(argv, cli) {
       '-w, --watch': 'monitor the changes of project',
       '-L, --live': 'automatically reload your browser',
       '-c, --clean': 'clean compile cache',
-      '-u, --unique': 'use unique compile caching',
+      '-u, --unique': 'use unique compile caching'
     });
+  }
+
+  // 如果指定了 media 值
+  if (argv._[1]) {
+    process.env.NODE_ENV = argv._[1];
   }
 
   var options = {
