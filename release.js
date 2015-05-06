@@ -9,8 +9,10 @@ exports.name = 'release [media name]';
 exports.desc = 'build and deploy your project';
 exports.run = function(argv, cli) {
 
-  if (argv.h) {
+  // 显示帮助信息
+  if (argv.h || argv.help) {
     return cli.help(exports.name, {
+      '-h, --help': 'print this help message',
       '-d, --dest <names>': 'release output destination',
       '-w, --watch': 'monitor the changes of project',
       '-L, --live': 'automatically reload your browser',
@@ -36,8 +38,6 @@ exports.run = function(argv, cli) {
   function watch(opt) {
     var root = fis.project.getProjectPath();
     var timer = -1;
-    var safePathReg = /[\\\/][_\-.\s\w]+$/i;
-    var ignoredReg = /[\/\\](?:output\b[^\/\\]*([\/\\]|$)|\.|fis-conf\.js$)/i;
 
     function listener(type) {
       clearTimeout(timer);
@@ -55,18 +55,11 @@ exports.run = function(argv, cli) {
 
           path = path.replace(/\\/g, '/');
 
-          var ignored = ignoredReg.test(path);
-          if (fis.config.get('project.exclude')) {
-            ignored = ignored ||
-              fis.util.filter(path, fis.config.get('project.exclude'));
-          }
-          if (fis.config.get('project.watch.exclude')) {
-            ignored = ignored ||
-              fis.util.filter(path, fis.config.get('project.watch.exclude'));
-          }
-          return ignored;
+          var partten = fis.get('project.watch.exclude', fis.get('project.exclude'));
+
+          return partten ? partten.test(path) : false;
         },
-        usePolling: fis.config.get('project.watch.usePolling', null),
+        usePolling: fis.get('project.watch.usePolling', null),
         persistent: true
       })
       .on('add', listener)
@@ -118,16 +111,16 @@ exports.run = function(argv, cli) {
   };
 
   function release(opt) {
-    var flag, cost, start = Date.now();
+    var flag, start = Date.now();
     process.stdout.write('\n Ω '.green.bold);
     opt.beforeEach = function(file) {
       flag = opt.verbose ? '' : '.';
-      cost = (new Date).getTime();
+      file.__start = (new Date).getTime();
       total[file.subpath] = file;
     };
     opt.afterEach = function(file) {
       //cal compile time
-      cost = (new Date).getTime() - cost;
+      var cost = (new Date).getTime() - file.__start;
       if (cost > 200) {
         flag = flag.bold.yellow;
         fis.log.debug(file.realpath);
