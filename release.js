@@ -115,16 +115,18 @@ exports.run = function(argv, cli) {
     process.stdout.write('\n Ω '.green.bold);
     opt.beforeEach = function(file) {
       flag = opt.verbose ? '' : '.';
-      file.__start = (new Date).getTime();
+      file.__start = Date.now();
       total[file.subpath] = file;
     };
     opt.afterEach = function(file) {
       //cal compile time
-      var cost = (new Date).getTime() - file.__start;
-      if (cost > 200) {
+      var cost = Date.now() - file.__start;
+
+      // 2s
+      if (cost > 2000000) {
         flag = flag.bold.yellow;
         fis.log.debug(file.realpath);
-      } else if (cost < 100) {
+      } else if (cost < 1000000) { // 1s
         flag = flag.grey;
       }
       var mtime = file.getMtime().getTime();
