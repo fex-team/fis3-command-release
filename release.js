@@ -13,7 +13,7 @@ exports.run = function(argv, cli) {
   if (argv.h || argv.help) {
     return cli.help(exports.name, {
       '-h, --help': 'print this help message',
-      '-d, --dest <names>': 'release output destination',
+      '-d, --dest <path>': 'release output destination',
       '-w, --watch': 'monitor the changes of project',
       '-L, --live': 'automatically reload your browser',
       '-c, --clean': 'clean compile cache',
