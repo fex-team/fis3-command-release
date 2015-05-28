@@ -99,7 +99,6 @@ exports.run = function(argv, cli) {
     function listener(type) {
       if (busy)return;
       busy = true;
-      console.log('buzing');
       next(options, done);
     }
 
@@ -136,17 +135,17 @@ exports.run = function(argv, cli) {
     };
 
     options.afterEach = function(file) {
-      var fromCache = !modified[file.subpath];
-      var cost = Date.now() - file._start;
-      var flag = fromCache ? (cost > alertCacheDurtion ? '.'.bold.yellow : '.'.grey) : (cost > alertDurtion ? '.'.bold.yellow : '.');
-
       var mtime = file.getMtime().getTime();
 
       if (file.release && lastModified[file.subpath] !== mtime) {
+        var fromCache = !modified[file.subpath];
+        var cost = Date.now() - file._start;
+        var flag = fromCache ? (cost > alertCacheDurtion ? '.'.bold.yellow : '.'.grey) : (cost > alertDurtion ? '.'.bold.yellow : '.');
+
         lastModified[file.subpath] = mtime;
         modified[file.subpath] = file;
 
-        verbose ? fis.log.debug(file.realpath) : (modified[file.subpath] && stream.write(flag));
+        verbose ? fis.log.debug(file.realpath) : stream.write(flag);
       }
     };
 
@@ -158,29 +157,24 @@ exports.run = function(argv, cli) {
       fis.release(options, function(ret) {
         stream.write(fis.log.format('%s' + '%sms'.bold.green +'\n', verbose ? '' : ' ', Date.now() - start));
 
-        var changed = !fis.util.isEmpty(modified);
-
-        if (changed) {
-          // clear cache
-          if (options.unique) {
-            time(fis.compile.clean);
-          }
-
-          fis.util.map(ret.pkg, function(subpath, file) {
-            modified[subpath] = file;
-            total[subpath] = file;
-          });
-
-
-          next({
-            options: options,
-            modified: modified,
-            total: total
-          });
-
-          modified = {};
-          total = {};
+        // clear cache
+        if (options.unique) {
+          time(fis.compile.clean);
         }
+
+        fis.util.map(ret.pkg, function(subpath, file) {
+          modified[subpath] = file;
+          total[subpath] = file;
+        });
+
+        next({
+          options: options,
+          modified: modified,
+          total: total
+        });
+
+        modified = {};
+        total = {};
       });
     } catch (e) {
       process.stdout.write('\n [ERROR] ' + (e.message || e) + '\n');
