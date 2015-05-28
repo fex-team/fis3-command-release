@@ -84,6 +84,7 @@ exports.run = function(argv, cli) {
     var opts = {
       usePolling: false,
       persistent: true,
+      ignoreInitial: true,
       ignored: function(path) {
         path.indexOf(root) === 0 && (path = path.substring(root.length));
 
@@ -103,7 +104,8 @@ exports.run = function(argv, cli) {
       busy = false;
     }
 
-    function listener(type) {
+    function listener() {
+
       // 没有 release 完，或者离上次 release 时间小于 200ms.
       // watch 可能同时触发好几种事件。
       if (busy || (Date.now() - lastTime) < 200)return;
@@ -121,6 +123,8 @@ exports.run = function(argv, cli) {
       .on('error', function(err) {
         //fis.log.error(err);
       });
+
+    opts.ignoreInitial && listener('inital');
   }
 
   var lastModified = {};
