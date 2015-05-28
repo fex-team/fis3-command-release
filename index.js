@@ -34,11 +34,18 @@ exports.run = function(argv, cli) {
     verbose: !!argv.verbose
   };
 
+  // enable watch automatically when live is enabled.
+  options.live && (options.watch = true);
+
   var app = require('./lib/chains.js')();
+  var livereload = require('./lib/livereload.js');
 
   app.use(bootstrap);
   options.watch && app.use(watch);
   app.use(release);
+
+  // 处理 livereload 脚本
+  app.use(livereload.handleReloadComment);
 
   // deliver
   app.use(function(info, next) {
@@ -46,7 +53,8 @@ exports.run = function(argv, cli) {
       next(info);
     });
   });
-  options.live && app.use(checkReload);
+
+  options.live && app.use(livereload.checkReload);
   app.run(options);
 
   // --------------------------------------------
@@ -91,14 +99,18 @@ exports.run = function(argv, cli) {
 
     fis.get('project.watch') && _.assign(opts, fis.get('project.watch'));
 
+    var lastTime = 0;
     var busy = false;
     function done() {
       busy = false;
     }
 
     function listener(type) {
-      if (busy)return;
+      // 没有 release 完，或者离上次 release 时间小于 200ms.
+      // watch 可能同时触发好几种事件。
+      if (busy || (Date.now() - lastTime) < 200)return;
       busy = true;
+      lastTime = new Date();
       next(options, done);
     }
 
@@ -158,11 +170,9 @@ exports.run = function(argv, cli) {
         stream.write(fis.log.format('%s' + '%sms'.bold.green +'\n', verbose ? '' : ' ', Date.now() - start));
 
         // clear cache
-        if (options.unique) {
-          time(fis.compile.clean);
-        }
+        options.unique && time(fis.compile.clean);
 
-        fis.util.map(ret.pkg, function(subpath, file) {
+        _.map(ret.pkg, function(subpath, file) {
           modified[subpath] = file;
           total[subpath] = file;
         });
@@ -172,9 +182,6 @@ exports.run = function(argv, cli) {
           modified: modified,
           total: total
         });
-
-        modified = {};
-        total = {};
       });
     } catch (e) {
       process.stdout.write('\n [ERROR] ' + (e.message || e) + '\n');
@@ -188,78 +195,5 @@ exports.run = function(argv, cli) {
         process.exit(1);
       }
     }
-  }
-
-  var LRServer;
-  function makeLiveServer() {
-    if (LRServer)return LRServer;
-
-    var LiveReloadServer = require('livereload-server-spec');
-    var port = fis.media().get('livereload.port', 8132);
-    LRServer = new LiveReloadServer({
-      id: 'com.baidu.fis',
-      name: 'fis-reload',
-      version: fis.cli.info.version,
-      port: port,
-      protocols: {
-        monitoring: 7
-      }
-    });
-
-    LRServer.on('livereload.js', function(req, res) {
-      var script = fis.util.fs.readFileSync(__dirname + '/vendor/livereload.js');
-      res.writeHead(200, {
-        'Content-Length': script.length,
-        'Content-Type': 'text/javascript',
-        'Connection': 'close'
-      });
-      res.end(script);
-    });
-
-    LRServer.listen(function(err) {
-      if (err) {
-        err.message = 'LiveReload server Listening failed: ' + err.message;
-        fis.log.error(err);
-      }
-    });
-
-    process.stdout.write('\n Ψ '.bold.yellow + port + '\n');
-
-    // fix mac livereload
-    process.on('uncaughtException', function(err) {
-      if (err.message !== 'read ECONNRESET') throw err;
-    });
-
-    return LRServer;
-  }
-
-  function reload() {
-    var server = makeLiveServer();
-
-    if (server && server.connections) {
-      _.map(server.connections, function(id, connection) {
-        try {
-          connection.send({
-            command: 'reload',
-            path: '*',
-            liveCSS: true
-          });
-        } catch (e) {
-          try {
-            connection.close();
-          } catch (e) {}
-          delete server.connections[id];
-        }
-      });
-    }
-  }
-
-  var reloadTimer;
-  function checkReload(value, next) {
-    makeLiveServer();
-
-    clearTimeout(reloadTimer);
-    reloadTimer = setTimeout(reload, fis.get('livereload.delay', 200));
-    next();
   }
 };
