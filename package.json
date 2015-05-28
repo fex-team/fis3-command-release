@@ -1,7 +1,7 @@
 {
   "name": "fis3-command-release",
   "description": "fis release command.",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "FIS Team <fis@baidu.com>",
   "homepage": "http://fis.baidu.com/",
   "keywords": [
@@ -14,12 +14,11 @@
   "engines": {
     "node": ">= 0.8.0"
   },
-  "main": "release.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha test/ut --recursive"
   },
   "dependencies": {
-    "async": "0.9.0",
     "chokidar": "1.0.1",
     "livereload-server-spec": "0.2.3"
   }
