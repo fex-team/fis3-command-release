@@ -49,9 +49,7 @@ exports.run = function(argv, cli) {
 
   // deliver
   app.use(function(info, next) {
-    deploy(info, function() {
-      next(info);
-    });
+    deploy(info, next.bind(null, info));
   });
 
   options.live && app.use(livereload.checkReload);
