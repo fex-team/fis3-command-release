@@ -49,11 +49,14 @@ exports.run = function(argv, cli) {
 
   // deliver
   app.use(function(info, next) {
-    deploy(info, next.bind(null, info));
+    fis.log.debug('deploy start');
+    deploy(info, function(error) {
+      fis.log.debug('deploy end');
+      next(error, info);
+    });
   });
 
   options.live && app.use(livereload.checkReload);
-  app.run(options);
 
   // --------------------------------------------
   //
@@ -68,7 +71,7 @@ exports.run = function(argv, cli) {
       });
     }
 
-    next(options);
+    next(null, options);
   }
 
   function time(fn) {
@@ -111,7 +114,7 @@ exports.run = function(argv, cli) {
       if (busy || (Date.now() - lastTime) < 200)return;
       busy = true;
       lastTime = new Date();
-      next(options, done);
+      next(null, options, done);
     }
 
     require('chokidar')
@@ -142,17 +145,19 @@ exports.run = function(argv, cli) {
     options.beforeEach = function(file) {
       file._start = Date.now(); // 记录起点
       total[file.subpath] = file;
+      file._fromCache = true;
     };
 
     options.beforeCompile = function(file) {
+      file._fromCache = false;
       modified[file.subpath] = file;
     };
 
     options.afterEach = function(file) {
       var mtime = file.getMtime().getTime();
+      var fromCache = file._fromCache;
 
-      if (file.release && lastModified[file.subpath] !== mtime) {
-        var fromCache = !modified[file.subpath];
+      if (file.release && (!fromCache || lastModified[file.subpath] !== mtime)) {
         var cost = Date.now() - file._start;
         var flag = fromCache ? (cost > alertCacheDurtion ? '.'.bold.yellow : '.'.grey) : (cost > alertDurtion ? '.'.bold.yellow : '.');
 
@@ -179,7 +184,7 @@ exports.run = function(argv, cli) {
           total[subpath] = file;
         });
 
-        next({
+        next(null, {
           options: options,
           modified: modified,
           total: total
@@ -196,6 +201,11 @@ exports.run = function(argv, cli) {
       } else {
         process.exit(1);
       }
+
+      next(true);
     }
   }
+
+  // run it.
+  app.run(options);
 };
