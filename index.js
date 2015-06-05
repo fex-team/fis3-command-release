@@ -165,6 +165,8 @@ exports.run = function(argv, cli) {
         modified[file.subpath] = file;
 
         verbose ? fis.log.debug(file.realpath) : stream.write(flag);
+      } else {
+        delete modified[file.subpath];
       }
     };
 
