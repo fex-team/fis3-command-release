@@ -150,7 +150,7 @@ exports.run = function(argv, cli) {
 
     options.beforeCompile = function(file) {
       file._fromCache = false;
-      modified[file.subpath] = file;
+      file.release !== false && (modified[file.subpath] = file);
     };
 
     options.afterEach = function(file) {
