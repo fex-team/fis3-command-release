@@ -184,8 +184,6 @@ exports.run = function(argv, cli) {
           total[subpath] = file;
         });
 
-        console.log(Object.keys(modified));
-
         next(null, {
           options: options,
           modified: modified,
