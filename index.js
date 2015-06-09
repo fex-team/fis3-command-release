@@ -165,8 +165,6 @@ exports.run = function(argv, cli) {
         modified[file.subpath] = file;
 
         verbose ? fis.log.debug(file.realpath) : stream.write(flag);
-      } else {
-        delete modified[file.subpath];
       }
     };
 
@@ -185,6 +183,8 @@ exports.run = function(argv, cli) {
           modified[subpath] = file;
           total[subpath] = file;
         });
+
+        console.log(Object.keys(modified));
 
         next(null, {
           options: options,
