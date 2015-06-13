@@ -1,7 +1,7 @@
 {
   "name": "fis3-command-release",
   "description": "fis release command.",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "author": "FIS Team <fis@baidu.com>",
   "homepage": "http://fis.baidu.com/",
   "keywords": [
