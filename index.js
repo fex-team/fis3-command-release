@@ -1,5 +1,6 @@
 var _ = fis.util;
 var deploy = require('./lib/deploy.js');
+var checkIgnore = require('./lib/checkignore.js');
 
 exports.name = 'release [media name]';
 exports.desc = 'build and deploy your project';
@@ -88,18 +89,18 @@ exports.run = function(argv, cli) {
       usePolling: false,
       persistent: true,
       ignoreInitial: true,
+      followSymlinks: false,
       ignored: function(path) {
-        path.indexOf(root) === 0 && (path = path.substring(root.length));
 
         // normalize path
         path = path.replace(/\\/g, '/');
+        path.indexOf(root) === 0 && (path = path.substring(root.length));
 
-        var partten = fis.get('project.watch.exclude') || fis.get('project.exclude');
-        return partten ? partten.test(path) : false;
+        return checkIgnore(path);
       }
     };
 
-    fis.get('project.watch') && _.assign(opts, fis.get('project.watch'));
+    _.assign(opts, fis.get('project.watch', {}));
 
     var lastTime = 0;
     var busy = false;
