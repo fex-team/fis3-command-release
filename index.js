@@ -16,7 +16,7 @@ exports.options = {
   '-u, --unique': 'use unique compile caching'
 };
 
-exports.run = function(argv, cli) {
+exports.run = function(argv, cli, env) {
 
   // 显示帮助信息
   if (argv.h || argv.help) {
@@ -52,6 +52,15 @@ exports.run = function(argv, cli) {
       time(function() {
         fis.cache.clean('compile');
       });
+    } else if (env.configPath) {
+      // fis-conf 失效？
+      var cache = fis.cache(env.configPath, 'conf');
+      if(!cache.revert()){
+        cache.save();
+        time(function() {
+          fis.cache.clean('compile');
+        });
+      }
     }
 
     next(null, options);
