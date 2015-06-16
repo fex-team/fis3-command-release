@@ -28,6 +28,8 @@ exports.run = function(argv, cli) {
     process.env.NODE_ENV = argv._[1];
   }
 
+  validate(argv);
+
   // normalize options
   var options = {
     dest: argv.dest || argv.d || 'preview',
@@ -76,3 +78,17 @@ exports.run = function(argv, cli) {
   // run it.
   app.run(options);
 };
+
+function validate(argv) {
+  if (argv._.length > 2) {
+    fis.log.error('Unregconized `%s`, please run fis3 release --help', argv._.slice(2).join(' '));
+  }
+
+  var allowed = ['_', 'dest', 'd', 'watch', 'w', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'childFlag'];
+
+  Object.keys(argv).forEach(function(k) {
+    if (!~allowed.indexOf(k)) {
+      fis.log.error('The option `%s` is unregconized, please run fis3 release --help', k);
+    }
+  });
+}
