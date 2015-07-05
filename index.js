@@ -95,7 +95,7 @@ function validate(argv) {
     fis.log.error('Unregconized `%s`, please run fis3 release --help', argv._.slice(2).join(' '));
   }
 
-  var allowed = ['_', 'dest', 'd', 'watch', 'w', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'color', 'child-flag'];
+  var allowed = ['_', 'dest', 'd', 'lint', 'l', 'watch', 'w', 'live', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'color', 'child-flag'];
 
   Object.keys(argv).forEach(function(k) {
     if (!~allowed.indexOf(k)) {
