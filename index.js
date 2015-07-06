@@ -23,11 +23,6 @@ exports.run = function(argv, cli, env) {
     return cli.help(exports.name, exports.options);
   }
 
-  // 如果指定了 media 值
-  if (argv._[1]) {
-    process.env.NODE_ENV = argv._[1];
-  }
-
   validate(argv);
 
   // normalize options
