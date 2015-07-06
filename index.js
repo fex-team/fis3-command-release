@@ -10,6 +10,7 @@ exports.desc = 'build and deploy your project';
 exports.options = {
   '-h, --help': 'print this help message',
   '-d, --dest <path>': 'release output destination',
+  '-l, --lint': 'with lint',
   '-w, --watch': 'monitor the changes of project',
   '-L, --live': 'automatically reload your browser',
   '-c, --clean': 'clean compile cache',
@@ -32,6 +33,7 @@ exports.run = function(argv, cli, env) {
     live: !!(argv.live || argv.L),
     clean: !!(argv.clean || argv.c),
     unique: !!(argv.unique || argv.u),
+    useLint: !!(argv.lint || argv.l),
     verbose: !!argv.verbose
   };
 
@@ -88,7 +90,7 @@ function validate(argv) {
     fis.log.error('Unregconized `%s`, please run fis3 release --help', argv._.slice(2).join(' '));
   }
 
-  var allowed = ['_', 'dest', 'd', 'watch', 'w', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'color', 'child-flag'];
+  var allowed = ['_', 'dest', 'd', 'lint', 'l', 'watch', 'w', 'live', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'color', 'child-flag'];
 
   Object.keys(argv).forEach(function(k) {
     if (!~allowed.indexOf(k)) {
