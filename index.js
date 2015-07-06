@@ -87,14 +87,14 @@ exports.run = function(argv, cli, env) {
 
 function validate(argv) {
   if (argv._.length > 2) {
-    fis.log.error('Unregconized `%s`, please run fis3 release --help', argv._.slice(2).join(' '));
+    fis.log.error('Unregconized `%s`, please run `%s release --help`', argv._.slice(2).join(' '), fis.cli.name);
   }
 
   var allowed = ['_', 'dest', 'd', 'lint', 'l', 'watch', 'w', 'live', 'L', 'clean', 'c', 'unique', 'u', 'verbose', 'color', 'child-flag'];
 
   Object.keys(argv).forEach(function(k) {
     if (!~allowed.indexOf(k)) {
-      fis.log.error('The option `%s` is unregconized, please run fis3 release --help', k);
+      fis.log.error('The option `%s` is unregconized, please run `%s release --help`', k, fis.cli.name);
     }
   });
 }
