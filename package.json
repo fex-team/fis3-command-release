@@ -1,7 +1,7 @@
 {
   "name": "fis3-command-release",
   "description": "fis release command.",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "author": "FIS Team <fis@baidu.com>",
   "homepage": "http://fis.baidu.com/",
   "keywords": [
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "chokidar": "1.0.1",
-    "livereload-server-spec": "0.2.3"
+    "livereload-server-spec": "0.2.3",
+    "portfinder": "0.4.0"
   }
 }

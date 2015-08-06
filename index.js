@@ -14,7 +14,11 @@ exports.options = {
   '-w, --watch': 'monitor the changes of project',
   '-L, --live': 'automatically reload your browser',
   '-c, --clean': 'clean compile cache',
-  '-u, --unique': 'use unique compile caching'
+  '-u, --unique': 'use unique compile caching',
+  '-r, --root <path>': 'specify project root',
+  '-f, --file <filename>': 'specify the file path of `fis-conf.js`',
+  '--no-color': 'disable colored output',
+  '--verbose': 'enable verbose mode'
 };
 
 exports.run = function(argv, cli, env) {
