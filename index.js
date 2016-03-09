@@ -32,7 +32,7 @@ exports.run = function(argv, cli, env) {
 
   // normalize options
   var options = {
-    dest: argv.dest || argv.d || 'preview',
+    dest: argv.dest || argv.d || fis.get('release.dir') || 'preview',
     watch: !!(argv.watch || argv.w),
     live: !!(argv.live || argv.L),
     clean: !!(argv.clean || argv.c),
