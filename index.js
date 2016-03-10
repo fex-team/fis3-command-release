@@ -30,9 +30,10 @@ exports.run = function(argv, cli, env) {
 
   validate(argv);
 
+
   // normalize options
   var options = {
-    dest: argv.dest || argv.d || fis.get('release.dir') || 'preview',
+    dest: argv.dest || argv.d || fis.media().get('release.dir') || 'preview',
     watch: !!(argv.watch || argv.w),
     live: !!(argv.live || argv.L),
     clean: !!(argv.clean || argv.c),
