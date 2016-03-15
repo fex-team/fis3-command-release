@@ -5,7 +5,7 @@ fis-command-release的修改版，减轻命令行输入的负担，使得命令�
 ##fis-conf.js配置方法
 ```js
 //发布路径设置
-fis.media('debug')
+fis.media('prod')
 	.set('release',{
 	    'dir':'output',//release的dest路径，对应命令行的-d/--dest参数
 	    /*'watch':true,//对应命令行的-w参数
