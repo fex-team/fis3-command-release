@@ -30,16 +30,21 @@ exports.run = function(argv, cli, env) {
 
   validate(argv);
 
+
   // normalize options
   var options = {
-    dest: argv.dest || argv.d || 'preview',
-    watch: !!(argv.watch || argv.w),
-    live: !!(argv.live || argv.L),
-    clean: !!(argv.clean || argv.c),
+    dest: argv.dest || argv.d || fis.media().get('release.dir') || 'preview',
+    watch: !!(argv.watch || argv.w || fis.media().get('release.watch')),
+    live: !!(argv.live || argv.L || fis.media().get('release.live')),
+    clean: !!(argv.clean || argv.c || fis.media().get('release.clean')),
     unique: !!(argv.unique || argv.u),
-    useLint: !!(argv.lint || argv.l),
-    verbose: !!argv.verbose
+    useLint: !!(argv.lint || argv.l || fis.media().get('release.lint')),
+    verbose: !!argv.verbose,
+    clear: !!fis.media().get('release.clear')
   };
+
+  //打印出当前relese的各参数
+  fis.log.info('当前release的输出路径为:%s',options.dest);
 
   // enable watch automatically when live is enabled.
   options.live && (options.watch = true);
@@ -69,6 +74,15 @@ exports.run = function(argv, cli, env) {
 
   // watch it?
   options.watch && app.use(watch);
+  //清除dest目录
+  app.use(function(options,next){
+    //clear dest/*
+    if(options.clear && options.dest !== 'preview'){
+    fis.log.info('clear dir %s',options.dest);
+     _.del(options.dest); 
+    }
+    next(null, options);
+  });
   app.use(release);
 
   // 处理 livereload 脚本
