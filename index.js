@@ -1,4 +1,5 @@
 var _ = fis.util;
+var path = require('path');
 var watch = require('./lib/watch.js');
 var release = require('./lib/release.js');
 var deploy = require('./lib/deploy.js');
@@ -84,6 +85,27 @@ exports.run = function(argv, cli, env) {
   });
 
   options.live && app.use(livereload.checkReload);
+
+  // output fix
+  if (_.is(options['dest'], 'String')) {
+    var dest = path.resolve(fis.project.getProjectPath(), options['dest']);
+
+    if (dest && dest.indexOf(fis.project.getProjectPath()) === 0) {
+      fis.log.warn('skip `output` directory: ' + dest);
+      
+      // maybe fis.set('project.ignore', 'node_modules/**');
+      if (!_.is(fis.get('project.ignore'), 'Array')) {
+        fis.set('project.ignore', [fis.get('project.ignore')]);
+      }
+
+      fis.set(
+        'project.ignore',
+        fis.get('project.ignore').concat(
+          [dest.replace(fis.project.getProjectPath() + '/', '') + '/**']
+        )
+      );
+    }
+  }
 
   // run it.
   app.run(options);
