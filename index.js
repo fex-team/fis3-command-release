@@ -90,9 +90,9 @@ exports.run = function(argv, cli, env) {
   if (_.is(options['dest'], 'String')) {
     var dest = path.resolve(fis.project.getProjectPath(), options['dest']);
 
-    if (dest && dest.indexOf(fis.project.getProjectPath()) === 0) {
+    if (_.exists(dest)) {
       fis.log.warn('skip `output` directory: ' + dest);
-      
+
       // maybe fis.set('project.ignore', 'node_modules/**');
       if (!_.is(fis.get('project.ignore'), 'Array')) {
         fis.set('project.ignore', [fis.get('project.ignore')]);
