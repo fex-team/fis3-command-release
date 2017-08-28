@@ -5,6 +5,7 @@ var release = require('./lib/release.js');
 var deploy = require('./lib/deploy.js');
 var livereload = require('./lib/livereload.js');
 var time = require('./lib/time.js');
+var checkIgnore = require('./lib/checkignore.js');
 
 exports.name = 'release [media name]';
 exports.desc = 'build and deploy your project';
@@ -88,9 +89,11 @@ exports.run = function(argv, cli, env) {
 
   // output fix
   if (_.is(options['dest'], 'String')) {
-    var dest = path.resolve(fis.project.getProjectPath(), options['dest']);
+    var root = fis.project.getProjectPath();
+    var dest = path.resolve(root, options['dest']);
+    var isInRoot = dest.indexOf(root) === 0;
 
-    if (_.exists(dest)) {
+    if (isInRoot && !checkIgnore(dest.substring(root.length)) && _.exists(dest)) {
       fis.log.warn('skip `output` directory: ' + dest);
 
       // maybe fis.set('project.ignore', 'node_modules/**');
@@ -101,7 +104,7 @@ exports.run = function(argv, cli, env) {
       fis.set(
         'project.ignore',
         fis.get('project.ignore').concat(
-          [dest.replace(fis.project.getProjectPath() + '/', '') + '/**']
+          [dest.replace(root + '/', '') + '/**']
         )
       );
     }
